@@ -1,0 +1,9 @@
+#!/bin/bash
+# Start IdentityChannelerBot with API keys
+# Copy this to start.sh and fill in your keys
+
+export OPENROUTER_API_KEY="your-openrouter-key-here"
+export ANTHROPIC_API_KEY="your-anthropic-key-here"
+
+cd "$(dirname "$0")"
+node server.js

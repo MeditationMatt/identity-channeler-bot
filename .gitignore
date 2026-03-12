@@ -1,0 +1,34 @@
+# API Keys & Secrets
+start.sh
+.env
+*.key
+
+# Generated content (large, not code)
+images/*
+!images/.gitkeep
+logs/*
+!logs/.gitkeep
+memories/*
+!memories/.gitkeep
+sessions/*
+!sessions/.gitkeep
+transcripts/*
+!transcripts/.gitkeep
+
+# ComfyUI output
+*.png
+*.jpg
+*.webp
+*.mp4
+
+# Personas (contain personal system prompts - user manages these)
+# Comment out if you want to share your persona configs
+# personas/*
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
