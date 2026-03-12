@@ -1747,6 +1747,10 @@ header{background:#111128;padding:14px 24px;border-bottom:1px solid #7c6fff33;di
       </div>
       <div class="lightbox-prompt" id="lb-prompt"></div>
       <div class="lightbox-meta" id="lb-meta"></div>
+      <div class="lightbox-actions" id="lb-actions" style="display:flex;gap:10px;margin-top:16px">
+        <button onclick="archiveCurrentImg()" style="background:#00cfff22;color:#00cfff;border:1px solid #00cfff44;padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer">📦 Archive</button>
+        <button onclick="deleteCurrentImg()" style="background:#ff446622;color:#ff4466;border:1px solid #ff446644;padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer">🗑️ Delete</button>
+      </div>
     </div>
   </div>
   <div class="lightbox-close" onclick="closeLightbox()">✕</div>
@@ -1817,7 +1821,10 @@ function applyFilters() {
   }).join('');
 }
 
+var currentImgIdx = -1;
+
 function openLightbox(idx) {
+  currentImgIdx = idx;
   var img = allImages[idx];
   document.getElementById('lightbox-img').src = img.url;
   document.getElementById('lb-av').textContent = img.persona_avatar || '🤖';
@@ -1827,6 +1834,32 @@ function openLightbox(idx) {
   var date = img.timestamp ? new Date(img.timestamp).toLocaleString() : '?';
   document.getElementById('lb-meta').innerHTML = '<span>📅 '+date+'</span><span>📁 '+img.filename+'</span>';
   document.getElementById('lightbox').classList.add('open');
+}
+
+async function archiveCurrentImg() {
+  if (currentImgIdx < 0) return;
+  var img = allImages[currentImgIdx];
+  var r = await fetch('/api/image/archive', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({filename:img.filename})});
+  var d = await r.json();
+  if (d.ok) {
+    closeLightbox();
+    allImages.splice(currentImgIdx, 1);
+    applyFilters();
+    alert('Archived!');
+  } else alert('Error: '+d.error);
+}
+
+async function deleteCurrentImg() {
+  if (currentImgIdx < 0) return;
+  var img = allImages[currentImgIdx];
+  if (!confirm('Delete '+img.filename+'? This cannot be undone.')) return;
+  var r = await fetch('/api/image/delete', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({filename:img.filename})});
+  var d = await r.json();
+  if (d.ok) {
+    closeLightbox();
+    allImages.splice(currentImgIdx, 1);
+    applyFilters();
+  } else alert('Error: '+d.error);
 }
 
 function closeLightbox(e) {
